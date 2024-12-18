@@ -37,10 +37,10 @@ def knn(N=2000):
 
     knn_options = []
     knn_n_neighbours = []
-    n = 2
+    n = 1
     while(n < N):
         knn_n_neighbours.append(n)
-        n*=2
+        n*=3
 
     knn_wheighs = ["uniform", "distance"]
     metrics = ["euclidean", "manhattan"]
@@ -74,11 +74,12 @@ def main():
 
     # Receber dados
 
-    data = treat_data.main("data/trabalho1/dados_de_treinamento_tratados.csv", train=True)
+    data_train = pd.read_csv("data/trabalho1/dados_treinamento_tratados.csv")
+    data_test = pd.read_csv("data/trabalho1/dados_teste_tratados.csv")
 
-    y = data["inadimplente"]
-    colunas = [coluna for coluna in data.columns if coluna != "inadimplente"]
-    x = data[colunas]
+    y = data_train["inadimplente"]
+    colunas = [coluna for coluna in data_train.columns if coluna != "inadimplente"]
+    x = data_train[colunas] 
 
     # Separar parte de treino real, teste e validação dentro do conjunto de treino
 
@@ -106,15 +107,10 @@ def main():
 
     result_final.sort(key= lambda x: x[0], reverse=True)
 
-    data = pd.read_csv("data/trabalho1/conjunto_de_teste.csv")
-
-    data_normalized = treat_data.main("data/trabalho1/conjunto_de_teste.csv", train=False)
-
     for pres, percent, model in result_final:
         print(pres, percent, model)
-        pred = modelo.predict(data_normalized)
-        print(pred)
-        break
+        pred = modelo.predict(data_test)
+        precisao = accuracy_score(pred, len(pred)*[1])
 
 if __name__ == "__main__":
     main()

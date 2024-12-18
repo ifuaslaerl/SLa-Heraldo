@@ -18,14 +18,12 @@ def tratar_dados_nao_numericos(df: pd.DataFrame, colunas_categoricas: list, colu
 
 def normalizar_dados(df: pd.DataFrame, colunas_para_normalizar: list, scaler=None):
     """ Normaliza os dados com RobustScaler. """
-    if scaler is None:
-        scaler = RobustScaler()
+    if scaler:
         df_normalizado = scaler.fit_transform(df[colunas_para_normalizar])
-    else:
-        df_normalizado = scaler.transform(df[colunas_para_normalizar])
+        df_normalizado = pd.DataFrame(df_normalizado, columns=colunas_para_normalizar, index=df.index)
+        return pd.concat([df.drop(columns=colunas_para_normalizar), df_normalizado], axis=1), scaler
     
-    df_normalizado = pd.DataFrame(df_normalizado, columns=colunas_para_normalizar, index=df.index)
-    return pd.concat([df.drop(columns=colunas_para_normalizar), df_normalizado], axis=1), scaler
+    return df, scaler
 
 def processar_dados(path, train=True, colunas_finais=None, scaler=None):
     """ Prepara os dados para treino ou teste. """
@@ -57,14 +55,14 @@ def processar_dados(path, train=True, colunas_finais=None, scaler=None):
 def main():
     """ Execução principal do código. """
     # Processar os dados de treino
-    data_train, colunas_finais, scaler = processar_dados("data/treino.csv", train=True)
+    data_train, colunas_finais, scaler = processar_dados("data/trabalho1/conjunto_de_treinamento.csv", train=True)
 
     # Processar os dados de teste com as mesmas colunas e escalador
-    data_test, _, _ = processar_dados("data/teste.csv", train=False, colunas_finais=colunas_finais, scaler=scaler)
+    data_test, _, _ = processar_dados("data/trabalho1/conjunto_de_teste.csv", train=False, colunas_finais=colunas_finais, scaler=scaler)
 
     # Salvar os dados tratados (opcional)
-    data_train.to_csv("dados_treinamento_tratados.csv", index=False)
-    data_test.to_csv("dados_teste_tratados.csv", index=False)
+    data_train.to_csv("data/trabalho1/dados_treinamento_tratados.csv", index=False)
+    data_test.to_csv("data/trabalho1/dados_teste_tratados.csv", index=False)
 
     return data_train, data_test
 
